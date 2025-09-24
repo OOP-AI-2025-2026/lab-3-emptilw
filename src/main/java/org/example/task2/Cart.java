@@ -4,60 +4,51 @@ import java.util.Arrays;
 
 public class Cart {
 
-    public Item[] contents;
-    int index;
+    private Item[] contents;
+    private int index;
 
-    Cart(Item[] _contents) {
-        this.contents = _contents;
+    public Cart(int size) {
+        this.contents = new Item[size];
+        this.index = 0;
     }
 
-    public void removeById(int itemIndex) {
+    // Видалити товар за id
+    public void removeById(long itemId) {
+        int foundIndex = findItemIndexById(itemId);
+        if (foundIndex == -1) return;
 
-        if (index == 0)
-            return;
-
-        int foundItemIndex = findItemInArray(contents[itemIndex]);
-
-        if (foundItemIndex == -1)
-            return;
-
-        if (foundItemIndex == index - 1) {
-            contents[index - 1] = null;
-            index--;
-            return;
+        for (int i = foundIndex; i < index - 1; i++) {
+            this.contents[i] = this.contents[i + 1];
         }
-
-        shiftArray(foundItemIndex);
-    }
-
-    public void shiftArray(int itemIndex) {
-        for (int i = itemIndex; i < index - 1; i++) {
-            contents[i] = contents[i + 1];
-        }
-        contents[index-1] = null;
+        this.contents[index - 1] = null;
         index--;
     }
 
-    public int findItemInArray(Item item) {
+    private int findItemIndexById(long itemId) {
         for (int i = 0; i < index; i++) {
-            if (contents[i].id == item.id) {
+            if (this.contents[i].getId() == itemId) {
                 return i;
             }
         }
-
         return -1;
     }
 
-    void add(Item item) {
-        if (isCartFull())
+    // Додати товар у кошик
+    public void add(Item item) {
+        if (isCartFull()) {
+            System.out.println("Кошик заповнений!");
             return;
-
-        contents[index] = item;
-        index++;
+        }
+        this.contents[this.index] = item;
+        this.index++;
     }
 
     public boolean isCartFull() {
-        return index == contents.length;
+        return this.index == this.contents.length;
+    }
+
+    public Item[] getContents() {
+        return Arrays.copyOf(this.contents, this.index);
     }
 
     @Override
